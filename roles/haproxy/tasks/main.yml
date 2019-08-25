@@ -1,0 +1,23 @@
+#- name: Upgrade all packages to the latest version
+#  apt:
+#    name: "*"
+#    state: latest
+
+- name: Install haproxy
+  apt:
+    name: haproxy
+    state: present
+
+- name: Template file for /etc/haproxy/haproxy.cfg
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: restart service haproxy, also issue daemon-reload to pick up config changes
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: haproxy

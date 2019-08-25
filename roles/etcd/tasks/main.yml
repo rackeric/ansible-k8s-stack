@@ -1,0 +1,36 @@
+- name: Create a configuration directory for Etcd
+  file:
+    path: /etc/etcd
+    state: directory
+
+- name: Create lib etcd directory
+  file:
+    path: /var/lib/etcd
+    state: directory
+
+- name: Move the certificates to the configuration directory
+  shell: sudo cp ~/ca.pem ~/kubernetes.pem ~/kubernetes-key.pem /etc/etcd
+
+- name: Download the etcd binaries
+  shell: wget https://github.com/coreos/etcd/releases/download/v3.3.9/etcd-v3.3.9-linux-amd64.tar.gz
+
+- name: Extract the etcd archive
+  shell: tar xvzf etcd-v3.3.9-linux-amd64.tar.gz
+
+- name: Move the etcd binaries to /usr/local/bin
+  shell: sudo cp etcd-v3.3.9-linux-amd64/etcd* /usr/local/bin/
+
+- name: Template file for /etc/systemd/system/etcd.service
+  template:
+    src: etcd.service
+    dest: /etc/systemd/system/etcd.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: restart service etcd, also issue daemon-reload to pick up config changes
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+    name: etcd

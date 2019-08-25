@@ -1,0 +1,24 @@
+- name: Add the Docker repository key
+  shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+- name: Add the Docker repository
+  shell: add-apt-repository "deb https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
+
+- shell: apt-get update
+
+- name: Install Docker
+  shell: apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep {{ docker_version }} | head -1 | awk '{print $3}')
+
+- name: Add the Google repository key
+  shell: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+- name: Add the Google repository
+  shell: echo "deb http://apt.kubernetes.io kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list
+
+- shell: apt-get update
+
+- shell: apt-get install -y kubelet kubeadm kubectl
+
+- shell: swapoff -a
+
+- shell: sed -i '/ swap / s/^/#/' /etc/fstab
