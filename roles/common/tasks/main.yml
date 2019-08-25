@@ -17,8 +17,19 @@
 
 - shell: apt-get update
 
-- shell: apt-get install -y kubelet kubeadm kubectl
+- shell: apt-get remove -y kubelet kubeadm kubectl
+
+- shell: apt-get install -y kubelet={{ k8s_version }}-00 kubeadm={{ k8s_version }}-00 kubectl={{ k8s_version }}-00 kubernetes-cni=0.6.0-00 --allow-downgrades
 
 - shell: swapoff -a
 
 - shell: sed -i '/ swap / s/^/#/' /etc/fstab
+
+- name: Create a configuration directory for Etcd
+  file:
+    path: /etc/etcd
+    state: directory
+
+- name: Move the certificates to the configuration directory
+  shell: sudo cp ~/ca.pem ~/kubernetes.pem ~/kubernetes-key.pem /etc/etcd
+

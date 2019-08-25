@@ -45,9 +45,10 @@ backend kubernetes-master-nodes
 mode tcp
 balance roundrobin
 option tcp-check
-#server k8s-master-0 192.168.1.21:6443 check fall 3 rise 2
-server k8s-master-0b 192.168.56.93:6443 check fall 3 rise 2
-#server k8s-master-1 192.168.1.22:6443 check fall 3 rise 2
-server k8s-master-1b 192.168.56.94:6443 check fall 3 rise 2
-#server k8s-master-2 192.168.1.23:6443 check fall 3 rise 2
-server k8s-master-2b 192.168.56.95:6443 check fall 3 rise 2
+##server k8s-master-0 192.168.1.21:6443 check fall 3 rise 2
+#server k8s-master-0b 192.168.56.93:6443 check fall 3 rise 2
+server k8s-master-1 192.168.1.22:6443 check fall 3 rise 2
+#server k8s-master-1b 192.168.56.94:6443 check fall 3 rise 2
+##server k8s-master-2 192.168.1.23:6443 check fall 3 rise 2
+#server k8s-master-2b 192.168.56.95:6443 check fall 3 rise 2
+server k8s-stack-master2 192.168.1.24:6443 check fall 3 rise 2

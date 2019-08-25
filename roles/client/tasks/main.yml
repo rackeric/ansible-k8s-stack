@@ -21,7 +21,7 @@
 # Installing kubectl
 - name: Download cfssl_linux-amd6
   get_url:
-    url: https://storage.googleapis.com/kubernetes-release/release/{{ k8s_version }}/bin/linux/amd64/kubectl
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_version }}/bin/linux/amd64/kubectl
     dest: /usr/local/bin/kubectl
     mode: '0755'
 
@@ -50,4 +50,7 @@
 - name: Copy certs to haproxy, master and etcd nodes
   shell: scp ca.pem kubernetes.pem kubernetes-key.pem "{{ item }}":~
   with_inventory_hostnames:
-    - all:!k8s_workers
+    - all
+
+- name: copy id_rsa to master1
+  shell: scp ~/.ssh/id_rsa root@"{{  groups['k8s_masters'][0] }}":~/.ssh/id_rsa

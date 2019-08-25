@@ -1,0 +1,20 @@
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: ClusterConfiguration
+kubernetesVersion: v{{ k8s_version }}
+apiServerCertSANs:
+{% for host in groups['haproxy'] %}
+- {{ host }}
+{% endfor %}
+controlPlaneEndpoint: "{% for host in groups['haproxy'] %}{{ host }}{% endfor %}:6443"
+etcd:
+  external:
+    endpoints:
+    {% for host in groups['etcd'] %}- https://{{ host }}:2379{% endfor %}
+    
+    caFile: /etc/etcd/ca.pem
+    certFile: /etc/etcd/kubernetes.pem
+    keyFile: /etc/etcd/kubernetes-key.pem
+networking:
+  podSubnet: 10.30.0.0/24
+apiServerExtraArgs:
+  apiserver-count: "3"

@@ -17,6 +17,13 @@
 - name: Extract the etcd archive
   shell: tar xvzf etcd-v3.3.9-linux-amd64.tar.gz
 
+- name: stop etcd service
+  systemd:
+    state: stopped
+    daemon_reload: yes
+    enabled: no
+    name: etcd
+
 - name: Move the etcd binaries to /usr/local/bin
   shell: sudo cp etcd-v3.3.9-linux-amd64/etcd* /usr/local/bin/
 

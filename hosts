@@ -9,6 +9,7 @@ localhost
 
 [k8s_masters]
 192.168.1.22
+192.168.1.24
 
 [k8s_workers]
 192.168.1.23

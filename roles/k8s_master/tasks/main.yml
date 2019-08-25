@@ -1,0 +1,49 @@
+- name: Template file for config.yaml used with kubeadm init
+  template:
+    src: config.yaml.j2
+    dest: ~/config.yaml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Initialize the machine as a master node
+  shell: sudo kubeadm init --config=config.yaml
+  when: inventory_hostname == play_hosts[0]
+  register: kubeadm_output
+
+- name: Output of kubeadm init
+  when: inventory_hostname == play_hosts[0]
+  debug:
+    msg: "{{ kubeadm_output.stdout }}"
+
+- name: Copy the certificates to the two other masters
+  #shell: scp -r /etc/kubernetes/pki "{{ item }}":~
+  synchronize: src=/etc/kubernetes/pki dest=~
+  delegate_to: "{{ play_hosts | first }}"
+  when: inventory_hostname != play_hosts[0]
+  #with_inventory_hostnames:
+  #  - k8s_masters
+
+# other masters
+- name: Remove the apiserver.crt and apiserver.key
+  shell: rm ~/pki/apiserver.*
+  when: inventory_hostname != play_hosts[0]
+
+- name: Move the certificates to the /etc/kubernetes directory
+  shell: mv ~/pki /etc/kubernetes/
+  when: inventory_hostname != play_hosts[0]
+
+- name: Initialize another master node
+  shell: sudo kubeadm init --config=config.yaml
+  when: inventory_hostname != play_hosts[0]
+  register: kubeadm_output
+
+- name: Output of kubeadm init
+  when: inventory_hostname != play_hosts[0]
+  debug:
+    msg: "{{ kubeadm_output.stdout }}"
+
+# apply CNI - Weave
+- name: Apply Weave CNI
+  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://git.io/weave-kube-1.6
+  when: inventory_hostname == play_hosts[0]
