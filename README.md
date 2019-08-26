@@ -9,3 +9,8 @@ ansible-playbook -i hosts roles/etcd.yml
 ansible-playbook -i hosts roles/k8s_master.yml
 ansible-playbook -i hosts roles/k8s_worker.yml
 ```
+
+To reset etcd and kubernetes nodes:
+```
+ansible-playbook -i hosts reset.yml
+```
