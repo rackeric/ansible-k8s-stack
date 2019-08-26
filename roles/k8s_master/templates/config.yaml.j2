@@ -9,7 +9,8 @@ controlPlaneEndpoint: "{% for host in groups['haproxy'] %}{{ host }}{% endfor %}
 etcd:
   external:
     endpoints:
-    {% for host in groups['etcd'] %}- https://{{ host }}:2379{% endfor %}
+    {% for host in groups['etcd'] %}- https://{{ host }}:2379
+    {% endfor %}
     
     caFile: /etc/etcd/ca.pem
     certFile: /etc/etcd/kubernetes.pem

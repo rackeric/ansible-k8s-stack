@@ -44,8 +44,12 @@
     src: kubernetes-csr.json
     dest: ~/kubernetes-csr.json
 
+- name: Print all hosts in inventory
+  debug:
+    msg: "{% for host in hostvars %}{{ host }},{% endfor %}"
+
 - name: Generate the certificate and private key.
-  shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname=192.168.1.20,192.168.1.21,192.168.1.22,192.168.1.23,127.0.0.1,kubernetes.default -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
+  shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname="{% for host in hostvars %}{{ host }},{% endfor %}"127.0.0.1,kubernetes.default -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
 
 - name: Copy certs to haproxy, master and etcd nodes
   shell: scp ca.pem kubernetes.pem kubernetes-key.pem "{{ item }}":~

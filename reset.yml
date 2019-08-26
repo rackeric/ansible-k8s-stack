@@ -1,0 +1,24 @@
+---
+- hosts: all
+  tasks:
+
+  - name: Stop etcd
+    systemd:
+      state: stopped
+      daemon_reload: yes
+      enabled: no
+      name: etcd
+    when: inventory_hostname in groups['etcd']
+
+  - name: Remove /var/lib/etcd
+    shell: rm -Rf /var/lib/etcd
+    when: inventory_hostname in groups['etcd']
+
+  - name: kubeadm reset
+    shell: kubeadm reset -f
+    when: (inventory_hostname in groups['k8s_masters']) or (inventory_hostname in groups['k8s_workers'])
+
+  - name: Clear iptables rules
+    shell: iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+    when: (inventory_hostname in groups['k8s_masters']) or (inventory_hostname in groups['k8s_workers'])
+

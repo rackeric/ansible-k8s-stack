@@ -23,6 +23,7 @@
     daemon_reload: yes
     enabled: no
     name: etcd
+  ignore_errors: yes
 
 - name: Move the etcd binaries to /usr/local/bin
   shell: sudo cp etcd-v3.3.9-linux-amd64/etcd* /usr/local/bin/
@@ -34,6 +35,9 @@
     owner: root
     group: root
     mode: '0644'
+
+- name: Remove trailing comma in /etc/systemd/system/etcd.service
+  shell: sed -i '/--initial-cluster /s/, \\*\r*$/ \\/' /etc/systemd/system/etcd.service
 
 - name: restart service etcd, also issue daemon-reload to pick up config changes
   systemd:
